@@ -1,0 +1,28 @@
+#!/bin/sh
+
+#PBS -l walltime=00:05:00
+#PBS -q mei
+
+
+#PBS -m abe
+#PBS -M a68547@alunos.uminho.pt
+
+#PBS -l nodes=1:ppn=2:r662
+
+echo "Allocated computing node: $node_info"
+read -r node_info<$PBS_NODEFILE
+
+module purge
+module load papi/5.4.1 
+echo "Done Loading PAPI..."
+
+echo "...................."
+
+echo "Getting Hardware Info of $node_info"
+cd /home/a68547/work-assig
+rm -rf MachineInfo
+mkdir MachineInfo
+papi_mem_info >> MachineInfo/mem_hierarchy.txt
+cat /proc/cpuinfo >> MachineInfo/CPU_info.txt
+cat /proc/meminfo >> MachineInfo/MEM_info.txt
+echo "Done..."

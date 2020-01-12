@@ -1,0 +1,20 @@
+#!/bin/sh
+
+#PBS -N huehue
+#PBS -l walltime=00:45:00
+#PBS -l nodes=1:r662:ppn=48
+
+module purge
+
+module load gcc/5.3.0
+module load papi/5.4.1
+
+cd $PBS_O_WORKDIR
+
+make
+
+for i in 32 128 1024 2048; do
+    echo "Size=" $i >> "resultados.csv"
+	./bin/mmult $i
+done
+echo "Finished."
