@@ -185,7 +185,7 @@ void run_dotproduct(float *A, float *B, float *C, int SIZE, void (*f) (float*,fl
 int main (int argc, char *argv[]) {
     
     float *A, *B, *C;
-    int size = atoi(argv[1]);
+    int size = atoi(argv[2]);
 
     A = (float *) malloc(size * size * sizeof(float));
     B = (float *) malloc(size * size * sizeof(float));
@@ -228,11 +228,11 @@ int main (int argc, char *argv[]) {
 
 
     //define function
-    if(!strcmp("dotProductCUDA", argv[2])){
+    if(!strcmp("dotProductCUDA", argv[1])){
     	implentation = dotProductCUDA;
-    }else if(!strcmp("dotProductBlockCUDA", argv[2])){
+    }else if(!strcmp("dotProductBlockCUDA", argv[1])){
     	implentation = dotProductBlockCUDA;
-    }else if(!strcmp("useCUDA", argv[2])){
+    }else if(!strcmp("useCUDA", argv[1])){
     	implentation = useCUDA;
     }
 
