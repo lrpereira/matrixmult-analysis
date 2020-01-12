@@ -70,10 +70,12 @@ int main(int argc, char *argv[])
 
     double start, end;
     int Events[NUM_EVENTS] = {PAPI_L1_TCM, PAPI_LD_INS, PAPI_SR_INS};
-                              //PAPI_L2_TCM, PAPI_L2_TCA, PAPI_L3_TCM, PAPI_L3_TCA};
+    //int Events[NUM_EVENTS] = {PAPI_L2_TCM, PAPI_L2_TCA};
+    //int Events[NUM_EVENTS] = {PAPI_L3_TCM, PAPI_L3_TCA};
     int EventSet = PAPI_NULL;
     long long papi[NUM_EVENTS];
     int retval = 0;
+    papi[0]=0; papi[1]=0; papi[2]=0;
 
     float** a = init_matrix(size);
     float** b = init_matrix(size);
@@ -83,30 +85,21 @@ int main(int argc, char *argv[])
     fill_matrix(a, size, 9);
     fill_matrix(b, size, 1);
 
-    /* Initialize the PAPI Library */
     retval = PAPI_library_init(PAPI_VER_CURRENT);
-    if (retval != PAPI_VER_CURRENT && retval > 0) {
-        fprintf(stderr,"PAPI library version mismatch!\n");
-        exit(1);
-    }
 
-    /* Allocate space for the new eventset and do setup */
-    if((retval = PAPI_create_eventset(&EventSet)) != PAPI_OK) {
-        fprintf(stderr, "PAPI create event set error %d: %s\n", retval, PAPI_strerror(retval));
+    if (retval != PAPI_VER_CURRENT && retval > 0)
         exit(1);
-    }
 
-    /* Add Flops and total cycles to the eventset */
-    if((retval = PAPI_add_events(EventSet, Events, NUM_EVENTS)) != PAPI_OK) {
-        fprintf(stderr, "PAPI add event set error %d: %s\n", retval, PAPI_strerror(retval));
+    if((retval = PAPI_create_eventset(&EventSet)) != PAPI_OK)
         exit(1);
-    }
 
-    //PAPI START
-    if((retval = PAPI_start(EventSet)) != PAPI_OK) {
-        fprintf(stderr, "PAPI start error %d: %s\n", retval, PAPI_strerror(retval));
+    if((retval = PAPI_add_events(EventSet, Events, NUM_EVENTS)) != PAPI_OK)
         exit(1);
-    }
+
+    if((retval = PAPI_start(EventSet)) != PAPI_OK)
+        exit(1);
+
+    clearCache();
 
     start = omp_get_wtime();
     switch(option){
@@ -131,22 +124,16 @@ int main(int argc, char *argv[])
     }
     end = omp_get_wtime();
 
-    //PAPI STOP
-    if((retval = PAPI_stop(EventSet,papi)) != PAPI_OK) {
-        fprintf(stderr, "PAPI stop error %d: %s\n", retval, PAPI_strerror(retval));
+    if((retval = PAPI_stop(EventSet,papi)) != PAPI_OK)
         exit(1);
-    }
 
     double timeMs = (end-start)*1000;
+
     FILE* fp = fopen("resultados.csv", "a");
-
-    float miss_rate_l1 = calc_miss_rate(papi[0], papi[1]+papi[2]);
-    // float miss_rate_l2 = calc_miss_rate(papi[3], papi[4]);
-    // float miss_rate_l3 = calc_miss_rate(papi[5], papi[6]);
-
-    fprintf(fp, "%d\n%lf\n%f\n", option, timeMs, miss_rate_l1);
-
+    fprintf(fp, "%d\n%lf\n%lld, %lld, %lld\n", option, timeMs, papi[0], papi[1], papi[2]);
     fclose(fp);
+
+    free_matrices(a, b, c1, size);
 
     return 0;
 }

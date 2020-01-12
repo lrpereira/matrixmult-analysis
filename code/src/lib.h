@@ -11,4 +11,5 @@ void print_matrix(float** m, int size);
 void transpose_matrix(float** m, int size);
 int val_result_axb(float** c, int size);
 int val_result_bxa(float** c, int size);
-float calc_miss_rate(long long tcm, long long tca);
+long long calc_miss_rate(long long tcm, long long tca);
+void free_matrices(float** a, float** b, float** c1, int size);

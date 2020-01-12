@@ -71,7 +71,15 @@ int val_result_bxa(float** c, int size)
     return 0;
 }
 
-float calc_miss_rate(long long tcm, long long tca)
+long long calc_miss_rate(long long tcm, long long tca)
 {
-    return (float)(tcm/tca)*100;
+    return (tcm/tca);
+}
+
+void free_matrices(float** a, float** b, float** c1, int size)
+{
+    for (int i=0; i<size; i++) {
+        free(a[i]); free(b[i]); free(c1[i]);
+    }
+    free(a); free(b); free(c1);
 }
