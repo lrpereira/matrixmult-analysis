@@ -10,7 +10,7 @@ source /share/apps/intel/parallel_studio_xe_2019/compilers_and_libraries_2019/li
 module purge
 
 module load papi/5.4.1
-module load gcc/4.8.2
+module load gcc/7.2.0
 module load cuda/7.0.28
 
 export CUDA=yes
