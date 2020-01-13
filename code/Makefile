@@ -1,6 +1,6 @@
 CXX			= gcc
 BIN_NAME	= mmult
-CXXFLAGS	= -std=c99 -Wall -Wextra -lpapi -L/share/apps/papi/5.4.1/lib -I/share/apps/papi/5.4.1/include -fopenmp
+CXXFLAGS	= -std=c99 -Wall -Wextra -fopenmp -lpapi -L/share/apps/papi/5.4.1/lib -I/share/apps/papi/5.4.1/include
 ####################################################################################
 SRC_DIR		= src
 BIN_DIR		= bin

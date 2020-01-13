@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <omp.h>
-#include "papi.h"
+//#include "papi.h"
 
 void init_app(int argc);
 float** init_matrix(int size);

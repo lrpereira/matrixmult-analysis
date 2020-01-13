@@ -60,6 +60,29 @@ void multiplication_jki_transpose(float** a, float** b, float** c, int size)
     transpose_matrix(c, size);
 }
 
+void multiplication_block(float **a, float **b, float **c, int size) {
+    int block_size = 16;
+    float tmp;
+    for (int jj = 0; jj < size; jj += block_size)
+    {
+        for (int kk = 0; kk < size; kk += block_size)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = jj; j < ((jj + block_size) > size ? size : (jj + block_size)); j++)
+                {
+                    tmp = 0.0f;
+                    for (int k = kk; k < ((kk + block_size) > size ? size : (kk + block_size)); k++)
+                    {
+                        tmp += a[i][k] * b[k][j];
+                    }
+                    c[i][j] += tmp;
+                }
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     //srand(time(0));
@@ -69,13 +92,14 @@ int main(int argc, char *argv[])
     int option = atoi(argv[2]);
 
     double start, end;
-    //int Events[NUM_EVENTS] = {PAPI_L1_TCM, PAPI_LD_INS, PAPI_SR_INS};
-    int Events[NUM_EVENTS] = {PAPI_L2_TCM, PAPI_L1_DCM};
-    //int Events[NUM_EVENTS] = {PAPI_L3_TCM, PAPI_L2_TCM};
-    int EventSet = PAPI_NULL;
-    long long papi[NUM_EVENTS];
-    int retval = 0;
-    papi[0]=0; papi[1]=0; //papi[2]=0;
+    // int Events[NUM_EVENTS] = {PAPI_L1_TCM, PAPI_LD_INS, PAPI_SR_INS};
+    // int Events[NUM_EVENTS] = {PAPI_L2_TCM, PAPI_L1_DCM};
+    // int Events[NUM_EVENTS] = {PAPI_L3_TCM, PAPI_L2_TCM};
+    // int Events[NUM_EVENTS] = {PAPI_L3_TCM, PAPI_TOT_INS};
+    // int EventSet = PAPI_NULL;
+    // long long papi[NUM_EVENTS];
+    // int retval = 0;
+    // papi[0]=0; papi[1]=0; //papi[2]=0;
 
     float** a = init_matrix(size);
     float** b = init_matrix(size);
@@ -85,19 +109,19 @@ int main(int argc, char *argv[])
     fill_matrix(a, size, 9);
     fill_matrix(b, size, 1);
 
-    retval = PAPI_library_init(PAPI_VER_CURRENT);
+    // retval = PAPI_library_init(PAPI_VER_CURRENT);
 
-    if (retval != PAPI_VER_CURRENT && retval > 0)
-        exit(1);
+    // if (retval != PAPI_VER_CURRENT && retval > 0)
+    //     exit(1);
 
-    if((retval = PAPI_create_eventset(&EventSet)) != PAPI_OK)
-        exit(1);
+    // if((retval = PAPI_create_eventset(&EventSet)) != PAPI_OK)
+    //     exit(1);
 
-    if((retval = PAPI_add_events(EventSet, Events, NUM_EVENTS)) != PAPI_OK)
-        exit(1);
+    // if((retval = PAPI_add_events(EventSet, Events, NUM_EVENTS)) != PAPI_OK)
+    //     exit(1);
 
-    if((retval = PAPI_start(EventSet)) != PAPI_OK)
-        exit(1);
+    // if((retval = PAPI_start(EventSet)) != PAPI_OK)
+    //     exit(1);
 
     clearCache();
 
@@ -118,20 +142,24 @@ int main(int argc, char *argv[])
     case 5:
         multiplication_jki_transpose(a, b, c1, size);
         break;
+    case 6:
+        multiplication_block(a, b, c1, size);
+        break;
     default:
         printf("Option invalid.\n");
         break;
     }
     end = omp_get_wtime();
 
-    if((retval = PAPI_stop(EventSet,papi)) != PAPI_OK)
-        exit(1);
+    // if((retval = PAPI_stop(EventSet,papi)) != PAPI_OK)
+    //     exit(1);
 
     double timeMs = (end-start)*1000;
 
-    FILE* fp = fopen("resultados.csv", "a");
-    fprintf(fp, "%d\n%lf\n%lld, %lld\n", option, timeMs, papi[0], papi[1]);
-    fclose(fp);
+    // FILE* fp = fopen("resultados.csv", "a");
+    // fprintf(fp, "%d\n%lf\n%lld, %lld\n", option, timeMs, papi[0], papi[1]);
+    // fclose(fp);
+    printf("%lf\n", timeMs);
 
     free_matrices(a, b, c1, size);
 
