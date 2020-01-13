@@ -21,9 +21,9 @@ CXXFLAGS += -I/share/apps/papi/5.4.1/include -L/share/apps/papi/5.4.1/lib  -lpap
 # Control awesome stuff
 ################################################################################
 
-SRC_DIR = src
-BIN_DIR = bin
-BUILD_DIR = build
+SRC_DIR = code-cuda/src
+BIN_DIR = code-cuda/bin
+BUILD_DIR = code-cuda/build
 SRC = $(wildcard $(SRC_DIR)/*.cu)
 OBJ = $(patsubst src/%.cu,build/%.o,$(SRC))
 DEPS = $(patsubst build/%.o,build/%.d,$(OBJ))

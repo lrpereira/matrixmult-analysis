@@ -15,7 +15,6 @@ module load cuda/7.0.28
 
 export CUDA=yes
 
-make clean 
 make
 
 StringVal = "dotProductCUDA dotProductBlockCUDA useCUDA"
