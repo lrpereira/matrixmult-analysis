@@ -1,7 +1,7 @@
 #include "lib.h"
 
 double clearcache [30000000];
-#define NUM_EVENTS 3
+#define NUM_EVENTS 2
 
 void clearCache (void)
 {
@@ -69,13 +69,13 @@ int main(int argc, char *argv[])
     int option = atoi(argv[2]);
 
     double start, end;
-    int Events[NUM_EVENTS] = {PAPI_L1_TCM, PAPI_LD_INS, PAPI_SR_INS};
-    //int Events[NUM_EVENTS] = {PAPI_L2_TCM, PAPI_L2_TCA};
-    //int Events[NUM_EVENTS] = {PAPI_L3_TCM, PAPI_L3_TCA};
+    //int Events[NUM_EVENTS] = {PAPI_L1_TCM, PAPI_LD_INS, PAPI_SR_INS};
+    int Events[NUM_EVENTS] = {PAPI_L2_TCM, PAPI_L1_DCM};
+    //int Events[NUM_EVENTS] = {PAPI_L3_TCM, PAPI_L2_TCM};
     int EventSet = PAPI_NULL;
     long long papi[NUM_EVENTS];
     int retval = 0;
-    papi[0]=0; papi[1]=0; papi[2]=0;
+    papi[0]=0; papi[1]=0; //papi[2]=0;
 
     float** a = init_matrix(size);
     float** b = init_matrix(size);
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
     double timeMs = (end-start)*1000;
 
     FILE* fp = fopen("resultados.csv", "a");
-    fprintf(fp, "%d\n%lf\n%lld, %lld, %lld\n", option, timeMs, papi[0], papi[1], papi[2]);
+    fprintf(fp, "%d\n%lf\n%lld, %lld\n", option, timeMs, papi[0], papi[1]);
     fclose(fp);
 
     free_matrices(a, b, c1, size);
